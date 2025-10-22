@@ -24,11 +24,11 @@ $(".mb-3").on('submit', async function () {
     let cityName = $(".form-control").val();
 
     if (cityName.trim()) {
-        let data = await weatherApi.getWeatherByCityName(cityName);
-        if (data.cod == "200") {
-            if (cities.includes(data.name)) {
-                alert('Город уже есть в списке');
-            } else {
+        if (cities.includes(cityName.toLowerCase())) {
+            alert('Город уже есть в списке');
+        } else {
+            let data = await weatherApi.getWeatherByCityName(cityName);
+            if (data.cod == "200") {
                 let h5 = $('<h5>',
                     { class: "card-title" }).text(`${data.name} ${Math.round(data.main.temp)} ℃`);
                 let p = $('<p>',
@@ -47,13 +47,12 @@ $(".mb-3").on('submit', async function () {
 
                 $(".mb-3").trigger('reset');
 
-                cities.push(data.name);
+                cities.push(data.name.toLowerCase());
+            } else if (data.cod == "404") {
+                alert(data.message);
+            } else {
+                alert('Error');
             }
-
-        } else if (data.cod == "404") {
-            alert(data.message);
-        } else {
-            alert('Error');
         }
     }
 })
